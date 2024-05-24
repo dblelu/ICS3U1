@@ -64,7 +64,7 @@ public class Hotel {
         }
     }
     public static makeReservations(int employee) {
-        int numberOfReservations, currentReservationDays[], currentReservationRooms[];
+        int numberOfReservations, day, room, currentReservationDays[], currentReservationRooms[];
         try {
             BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
             numberOfReservations = Integer.parseInt(br.readLine());
@@ -74,23 +74,34 @@ public class Hotel {
                 currentReservationDays[i] = Integer.parseInt(br.readLine());
                 currentReservationRooms[i] = Integer.parseInt(br.readLine());
             }
+            br.close();
         } catch (IOException e) {
-            System.out.println("Error " + e);
             return false;
         }
         boolean valid = false;
         while (!valid) {
             System.out.println("Enter a day to reserve (int)");
-            int day = getInt();
+            day = getInt();
             if (!same(currentReservationDays, day)) valid = true;
         }
         valid = false;
         while (!valid) {
             System.out.println("Enter a room to reserve (int)");
-            int room = getInt();
+            room = getInt();
             if (!same(currentReservationRooms, room)) valid = true;
         }
-        
+        System.out.println("You have a reservation on day" + day + " in room " + room);
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("reservations.txt", false));
+            br.write(++numberOfReservations); br.newLine();
+            for (int i = 0; i < numberOfReservations; i++) {
+                br.write(currentReservationDays[i]); br.newLine();
+                br.write(currentReservationRooms[i]); br.newLine();
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return true;   
     }
     public static boolean same(int[] a, int x) {
         for (int i = 0; i < a.length; i++) if (a[i] == x) return false;
