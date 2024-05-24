@@ -37,7 +37,7 @@ public class WriteChars
         }
         catch (IOException e)
         {
-            System.out.println(e + "Problem reading" + FILE_NAME);
+            System.out.println(e + "Problem writing" + FILE_NAME);
         }
     }
 }
