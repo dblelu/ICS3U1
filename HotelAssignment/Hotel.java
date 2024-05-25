@@ -53,7 +53,7 @@ public class Hotel {
                     int first = sc.nextLine();
                     int last = sc.nextLine();
                     System.out.println("Enter a date");
-                    int day = sc.nextLine();
+                    int day = getInt();
                     makeReservations(first, last, day, -1);
                     break;
                 case 2:
@@ -66,7 +66,9 @@ public class Hotel {
                     changePin();
                     break;
                 case 5: 
-                    listRoomsDate();
+                    System.out.println("Enter a date");
+                    day = getInt();    
+                    listAvailableRooms(day);
                     break;
                 case 6:
                     listReservationsDate();
@@ -102,19 +104,35 @@ public class Hotel {
 
         firstNames[numberOfReservations] = sc.nextLine();
         lastNames[numberOfReservations] = sc.nextLine();
-        listAvailableRooms(reservationDays, reservationRooms, day);
-        System.out.println;
-
+        int[] rooms = listAvailableRooms(reservationDays, reservationRooms, day);
+        for (int i = 0; i < rooms.length; i++) {
+            if (rooms[i] != -1) System.out.println("1. Room: " + rooms[i]);
+        }
+        System.out.println("Enter the room you want (int) ");
+        int room = getInt();
+        boolean valid = false;
+        while (!valid) {
+            if (available(reservationDays, reservationRooms, day, room)) {
+                valid = true;
+            } else {
+                System.out.println("That room is not available");
+            }
+            System.out.println("Enter the room you want (int) ");
+            room = getInt();
+        }
         if (!fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms)) return false;
     }
-    public static void listAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
+    public static int[] listAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File("rooms.txt")));
             int numRooms = Integer.parseInt(br.readLine());
+            int[] ret = new int[numRooms];
             for (int i = 0; i < numRooms; i++) {
                 int room = Integer.praseInt(br.readLine());
                 if (available(reservationDays, reservationRooms, day, room)) {
-                    System.out.println("Room " + room);
+                    ret[i] = room;
+                } else {
+                    ret[i] = -1;
                 }
             }
             br.close();
@@ -125,6 +143,31 @@ public class Hotel {
     public static boolean available(int[] reservationDays, int[] reservationRooms, int day, int room) {
         for (int i = 0; i < reservationDays.length; i++) {
             if (day == reservationDays[i] && room == reservationRooms[i]) return false;
+        }
+        return true;
+    }
+    public static boolean listAvailableRooms(int day) {
+        int numberOfReservations, firstNames[], lastNames[], reservationDays[], reservationRooms[], employeeNumbers[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
+            numberOfReservations = Integer.parseInt(br.readLine());
+            reservationDays = new int[numberOfReservations+1];
+            reservationRooms = new int[numberOfReservations+1];
+            for (int i = 0; i < numberOfReservations; i++) {
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                reservationDays[i] = Integer.parseInt(br.readLine());
+                reservationRooms[i] = Integer.parseInt(br.readLine());
+                employeeNumbers[i] = Integer.parseInt(br.readLine());
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        int[] rooms = listAvailableRooms(reservationDays, reservationRooms, day);
+        System.out.println("Available Rooms: ");
+        for (int i = 0; i < rooms.length; i++) {
+            System.out.println("Room " + rooms[i]);
         }
         return true;
     }
