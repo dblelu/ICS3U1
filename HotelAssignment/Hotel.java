@@ -49,13 +49,18 @@ public class Hotel {
             int input = getInt();
             switch (input) {
                 case 1:
-                    makeReservations();
+                    System.out.println("Enter the first name and last name");
+                    int first = sc.nextLine();
+                    int last = sc.nextLine();
+                    System.out.println("Enter a date");
+                    int day = sc.nextLine();
+                    makeReservations(first, last, day, -1);
                     break;
                 case 2:
                     cancelReservation();
                     break;
                 case 3:
-                    changeReservation();
+                    changeReservation();    
                     break;
                 case 4: 
                     changePin();
@@ -75,33 +80,68 @@ public class Hotel {
             }
         }
     }
-    public static boolean makeReservations() {
-        int numberOfReservations, day, room, firstNames[], lastNames[], reservationDays[], reservationRooms[];
+    public static boolean makeReservations(int first, int last, int day, int sameRoom) {
+        //Get reservation info
+        int numberOfReservations, firstNames[], lastNames[], reservationDays[], reservationRooms[], employeeNumbers[];
         try {
             BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
             numberOfReservations = Integer.parseInt(br.readLine());
-            reservationDays = new int[numberOfReservations];
-            reservationRooms = new int[numberOfReservations];
+            reservationDays = new int[numberOfReservations+1];
+            reservationRooms = new int[numberOfReservations+1];
             for (int i = 0; i < numberOfReservations; i++) {
                 firstNames[i] = br.readLine();
                 lastNames[i] = br.readLine();
                 reservationDays[i] = Integer.parseInt(br.readLine());
                 reservationRooms[i] = Integer.parseInt(br.readLine());
+                employeeNumbers[i] = Integer.parseInt(br.readLine());
             }
             br.close();
         } catch (IOException e) {
             return false;
         }
 
+        firstNames[numberOfReservations] = sc.nextLine();
+        lastNames[numberOfReservations] = sc.nextLine();
+        listAvailableRooms(reservationDays, reservationRooms, day);
+        System.out.println;
 
+        if (!fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms)) return false;
+    }
+    public static void listAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(new File("rooms.txt")));
+            int numRooms = Integer.parseInt(br.readLine());
+            for (int i = 0; i < numRooms; i++) {
+                int room = Integer.praseInt(br.readLine());
+                if (available(reservationDays, reservationRooms, day, room)) {
+                    System.out.println("Room " + room);
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Error" + e);
+        }
+    }
+    public static boolean available(int[] reservationDays, int[] reservationRooms, int day, int room) {
+        for (int i = 0; i < reservationDays.length; i++) {
+            if (day == reservationDays[i] && room == reservationRooms[i]) return false;
+        }
+        return true;
+    }
+    //helper method 
+    public static boolean fillReservationFile(int numberOfReservations, int[] firstNames, int[] lastNames, int[] reservationDays, int[] reservationRooms, int skip) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("reservations.txt", false));
-            br.write(++numberOfReservations); br.newLine();
+            //fix the skip part later
+            br.write(numberOfReservations); br.newLine();
             for (int i = 0; i < numberOfReservations; i++) {
-                br.write(firstNames[i]); br.newLine();
-                br.write(lastNames[i]); br.newLine();
-                br.write(reservationDays[i]); br.newLine();
-                br.write(reservationRooms[i]); br.newLine();
+                if (i != skip) {
+                    br.write(firstNames[i]); br.newLine();
+                    br.write(lastNames[i]); br.newLine();
+                    br.write(reservationDays[i]); br.newLine();
+                    br.write(reservationRooms[i]); br.newLine();
+                    br.write(employeeNumber[i]); br.newLine();
+                }
             }
             br.close();
         } catch (IOException e) {
@@ -110,46 +150,7 @@ public class Hotel {
         return true;   
     }
     public static boolean cancelReservations() {
-        int numberOfReservations, day, room, currentReservationDays[], currentReservationRooms[];
-        System.out.println("Enter a day to cancel/change (int)");
-        day = getInt();
-        System.out.println("Enter a room to cancel/change (int)");
-        room = getInt();
-        boolean valid = false;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
-            numberOfReservations = Integer.parseInt(br.readLine());
-            currentReservationDays = new int[numberOfReservations];
-            currentReservationRooms = new int[numberOfReservations];
-            for (int i = 0; i < numberOfReservations; i++) {
-                currentReservationDays[i] = Integer.parseInt(br.readLine());
-                currentReservationRooms[i] = Integer.parseInt(br.readLine());
-                if (currentReservationDays[i] == day && currentReservationRooms[i] == room) valid = true;
-            }
-            br.close();
-        } catch (IOException e) {
-            return false;
-        }
-        
-        if (!valid) {
-            System.out.println("This reservation does not exist");
-            return false;
-        }
-        
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("reservations.txt", false));
-            bw.write(--numberOfReservations); br.newLine();
-            for (int i = 0; i < numberOfReservations; i++) {
-                if (!(room == currentReservationRooms[i] && day == currentReservationDays[i])) {
-                    bw.write(currentReservationDays[i]); bw.newLine();
-                    bw.write(currentReservationRooms[i]); bw.newLine();
-                }
-            }
-            bw.close();
-        } catch (IOException e) {
-            return false;
-        }
-        return true;   
+       
     }
     public static boolean changeReservation() {
         if (!cancelReservations()) return false;
