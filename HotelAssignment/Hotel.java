@@ -1,5 +1,4 @@
 import java.io.*;
-import java.nio.Buffer;
 import java.util.Scanner; 
 
 public class Hotel {
@@ -15,7 +14,6 @@ public class Hotel {
         }
     }
     public static void verify(int number) {
-        if (number == 0) admin();
         File file = new File(number + ".txt");
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -28,12 +26,17 @@ public class Hotel {
                     System.out.println("You entered the incorrect password too many times");
                     return;
                 }
+                if (input == 0) return;
+                if (number == 0 && password == 1234) {
+                    admin();
+                    return;
+                }
                 cnt++; 
-                System.out.println("Enter your password");
+                System.out.println("Enter your password or 0 to go back");
                 input = getInt(); 
             }
-            employee(number);
             br.close();
+            employee(number);
         } catch (IOException e) {
             System.out.println("Employee number not valid");
         }
@@ -42,7 +45,7 @@ public class Hotel {
         //Enter filler code that displays the name
         boolean goBack = false;
         while (!goBack) {
-            System.out.println("Enter instructions (1, 2, 3, 4)");
+            System.out.println("Enter instructions:\n1. Make Reservations\n2. Cancel Reservations\n3. Change Reservations\n4. Change Pin\n5. List all rooms for date\n6. List all reservations for date\n7. Look up reservations for given name\n8. Log Out");
             int input = getInt();
             switch (input) {
                 case 1:
@@ -57,46 +60,48 @@ public class Hotel {
                 case 4: 
                     changePin();
                     break;
+                case 5: 
+                    listRoomsDate();
+                    break;
+                case 6:
+                    listReservationsDate();
+                    break;
+                case 7:
+                    lookUpName();
+                    break;
                 default: 
                     goBack = true;
                     break;
             }
         }
     }
-    public static boolean makeReservations(int employee) {
-        int numberOfReservations, day, room, currentReservationDays[], currentReservationRooms[];
+    public static boolean makeReservations() {
+        int numberOfReservations, day, room, firstNames[], lastNames[], reservationDays[], reservationRooms[];
         try {
             BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
             numberOfReservations = Integer.parseInt(br.readLine());
-            currentReservationDays = new int[numberOfReservations];
-            currentReservationRooms = new int[numberOfReservations];
+            reservationDays = new int[numberOfReservations];
+            reservationRooms = new int[numberOfReservations];
             for (int i = 0; i < numberOfReservations; i++) {
-                currentReservationDays[i] = Integer.parseInt(br.readLine());
-                currentReservationRooms[i] = Integer.parseInt(br.readLine());
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                reservationDays[i] = Integer.parseInt(br.readLine());
+                reservationRooms[i] = Integer.parseInt(br.readLine());
             }
             br.close();
         } catch (IOException e) {
             return false;
         }
-        boolean valid = false;
-        while (!valid) {
-            System.out.println("Enter a day to reserve (int)");
-            day = getInt();
-            if (!same(currentReservationDays, day)) valid = true;
-        }
-        valid = false;
-        while (!valid) {
-            System.out.println("Enter a room to reserve (int)");
-            room = getInt();
-            if (!same(currentReservationRooms, room)) valid = true;
-        }
-        System.out.println("You have a reservation on day" + day + " in room " + room);
+
+
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("reservations.txt", false));
             br.write(++numberOfReservations); br.newLine();
             for (int i = 0; i < numberOfReservations; i++) {
-                br.write(currentReservationDays[i]); br.newLine();
-                br.write(currentReservationRooms[i]); br.newLine();
+                br.write(firstNames[i]); br.newLine();
+                br.write(lastNames[i]); br.newLine();
+                br.write(reservationDays[i]); br.newLine();
+                br.write(reservationRooms[i]); br.newLine();
             }
             br.close();
         } catch (IOException e) {
@@ -104,15 +109,11 @@ public class Hotel {
         }
         return true;   
     }
-    public static boolean same(int[] a, int x) {
-        for (int i = 0; i < a.length; i++) if (a[i] == x) return false;
-        return true;
-    }
     public static boolean cancelReservations() {
         int numberOfReservations, day, room, currentReservationDays[], currentReservationRooms[];
-        System.out.println("Enter a day to cancel (int)");
+        System.out.println("Enter a day to cancel/change (int)");
         day = getInt();
-        System.out.println("Enter a room to cancel (int)");
+        System.out.println("Enter a room to cancel/change (int)");
         room = getInt();
         boolean valid = false;
         try {
@@ -150,6 +151,14 @@ public class Hotel {
         }
         return true;   
     }
+    public static boolean changeReservation() {
+        if (!cancelReservations()) return false;
+        if (!makeReservations()) return false;
+        return true;
+    }
+    public static boolean changePin() {
+
+    }
     public static int getInt() {
         Scanner sc = new Scanner(System.in);
         String n = sc.nextLine();
@@ -157,7 +166,7 @@ public class Hotel {
             try {
                 return Integer.parseInt(n);
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input");
+                System.out.println("Invalid input. \nTry again: ");
             }
         }
     }
