@@ -104,7 +104,7 @@ public class Hotel {
 
         firstNames[numberOfReservations] = sc.nextLine();
         lastNames[numberOfReservations] = sc.nextLine();
-        int[] rooms = listAvailableRooms(reservationDays, reservationRooms, day);
+        int[] rooms = getAvailableRooms(reservationDays, reservationRooms, day);
         for (int i = 0; i < rooms.length; i++) {
             if (rooms[i] != -1) System.out.println("1. Room: " + rooms[i]);
         }
@@ -122,7 +122,7 @@ public class Hotel {
         }
         if (!fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms)) return false;
     }
-    public static int[] listAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
+    public static int[] getAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File("rooms.txt")));
             int numRooms = Integer.parseInt(br.readLine());
@@ -164,7 +164,7 @@ public class Hotel {
         } catch (IOException e) {
             return false;
         }
-        int[] rooms = listAvailableRooms(reservationDays, reservationRooms, day);
+        int[] rooms = getAvailableRooms(reservationDays, reservationRooms, day);
         System.out.println("Available Rooms: ");
         for (int i = 0; i < rooms.length; i++) {
             System.out.println("Room " + rooms[i]);
