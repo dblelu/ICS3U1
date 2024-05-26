@@ -40,7 +40,7 @@ public class StarTable
         // wrtie the startable in the file. 
         try
         {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, false))
+            BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, false));
             for (int i = 0; i < r; i++)
             {
                 for (int j = 0; j < c; j ++)

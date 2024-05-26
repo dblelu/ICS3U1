@@ -1,4 +1,4 @@
-package HotelFolder;
+
 import java.io.*;
 import java.util.Scanner; 
 
@@ -19,7 +19,6 @@ public class Hotel {
         try {
             BufferedReader br = new BufferedReader(new FileReader("employee.txt"));
             int numberOfEmployees = Integer.parseInt(br.readLine());
-            
             boolean found = false;
             int number = -1;
             int password = -1;
@@ -32,7 +31,12 @@ public class Hotel {
                 last = br.readLine();
                 if (number == num) found = true;
             }
-            System.out.println("Enter your password for " + number + "or 0 to go back");
+            br.close();
+            if (!found) {
+                System.out.println("Employee doesn't exist");
+                return;
+            }
+            System.out.println("Enter your password for " + number + " or 0 to go back");
             int input = getInt();
             int cnt = 0;
             while (password != input) {
@@ -45,7 +49,7 @@ public class Hotel {
                 System.out.println("Enter your password for " + number + "or 0 to go back");
                 input = getInt(); 
             }
-            br.close();
+            
             employee(number, first, last);
         } catch (IOException e) {
             System.out.println("Error" + e);
@@ -67,7 +71,7 @@ public class Hotel {
                     last = sc.nextLine();
                     System.out.println("Enter a date");
                     day = getInt();
-                    makeReservations(first, last, day);
+                    if (!makeReservations(first, last, day)) System.out.println("Error with reservation!");
                     break;
                 case 2:
                     System.out.println("Enter the first name and last name");
