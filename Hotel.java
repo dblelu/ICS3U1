@@ -57,8 +57,8 @@ public class Hotel {
     }
     public static void employee(int number, String empFirstName, String empLastName) {
         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-        System.out.println("Welcome Employee " + number);
-        System.out.println("First Name: " + empFirstName + "\nLast Name: " + empLastName);
+        System.out.println("Welcome Employee: " + number);
+        System.out.println("First Name: " + empFirstName + "\nLast Name: " + empLastName + "\n\n");
 
         Scanner sc = new Scanner(System.in);
         //Enter filler code that displays the name
@@ -76,12 +76,14 @@ public class Hotel {
                     System.out.println("Enter a date");
                     day = getInt();
                     if (!makeReservations(number, first, last, day)) System.out.println("Error with reservation!");
+                    else System.out.println("Sucessfully created reservation for " + first + " " + last + " on " + day);
                     break;
                 case 2:
                     System.out.println("Enter the first name and last name");
                     first = sc.nextLine();
                     last = sc.nextLine();
-                    cancelReservations(first, last);
+                    if (cancelReservations(first, last)) System.out.println("Erro cnaceling reservation!");
+                    else System.out.println("Succesfully cancelled the reservation");
                     break;
                 case 3:
                     System.out.println("Enter the first name and last name");
@@ -91,7 +93,8 @@ public class Hotel {
                     break;
                 case 4:
                 //impl 
-                    changePin(number);
+                    if (changePin(number)) System.out.println("Sucessfully changed the pin");
+                    else System.out.println("Error changing the pin");
                     break;
                 case 5: 
                     System.out.println("Enter a date");
@@ -503,7 +506,7 @@ public class Hotel {
     public static void admin() {
         Scanner sc = new Scanner(System.in);
         boolean logOut = false;
-        System.out.println("\n\n\n\n\n\n\n\n\n\nWelcome to the admin account\n");
+        System.out.println("\n\n\n\n\n\n\n\n\n\nWelcome to the admin account\n\n");
         
         String firstName, lastName;
         int number, password;
@@ -519,24 +522,29 @@ public class Hotel {
                     number = getInt();
                     System.out.println("Enter password");
                     password = getInt();
-                    createEmployee(firstName, lastName, number, password);
+                    if (createEmployee(firstName, lastName, number, password)) System.out.println("Sucessfully created employee with number: " + number);
+                    else System.out.println("Error creating employee with number " + number);
                     break;
                 case 2:
                     System.out.println("Enter the employee you want to remove by number");
                     number = getInt();
-                    deleteEmployee(number);
+                    if (deleteEmployee(number)) System.out.println("Sucessfully deleted employee " + number);
+                    else System.out.println("Error deleting employee " + number);
                     break;
                 case 3:
                     System.out.println("Enter a room number you want to create");
                     number = getInt();
-                    createRoom(number);
+                    if (createRoom(number)) System.out.println("Sucessfully created room " + number);
+                    else System.out.println("Error creating room " + number);
                     break;
                 case 4:
                     System.out.println("Enter a room you want to remove");
                     number = getInt();
-                    deleteRoom(number);
+                    if (deleteRoom(number)) System.out.println("Sucessfully deleted room " + number);
+                    else System.out.println("Error deleting room " + number);
                     break;
                 case 5: 
+                    System.out.println("Sucessfully Logged Out");
                     logOut = true;
                     break;
             }
