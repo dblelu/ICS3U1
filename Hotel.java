@@ -12,10 +12,10 @@ public class Hotel {
         }
     }
     public static void verify(int num) {
-        if (num == 0) {
+        System.out.println("Please Enter the password");
+        int pw = getInt();
+        if (num == 0 && pw == 1234) {
 
-            //hi bb
-            //hi cutie, can you teach me how to do the password admin method
             admin();
             return;
         }
