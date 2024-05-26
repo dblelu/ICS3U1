@@ -5,6 +5,7 @@ public class Hotel {
     public static void main(String[] args) {
         while (true) {
             System.out.println("Enter a employee number to log in: ");
+            
             int number = getInt();
             verify(number);
         }
