@@ -56,6 +56,10 @@ public class Hotel {
         }
     }
     public static void employee(int number, String empFirstName, String empLastName) {
+        System.out.println("\n\n\n\n\n\n\n\n\n\n");
+        System.out.println("Welcome Employee " + number);
+        System.out.println("First Name: " + empFirstName + "\nLast Name: " + empLastName);
+
         Scanner sc = new Scanner(System.in);
         //Enter filler code that displays the name
         boolean goBack = false;
@@ -344,7 +348,7 @@ public class Hotel {
         System.out.println("Here are your reservations: ");
         for (int i = 0, cnt = 1; i < valid.length; i++) {
             if (valid[i]) {
-                System.out.println(cnt + ". Name: " + first + " " + last + "\n  Date " + reservationDays[i] + "\n  Room" + reservationRooms[i]);
+                System.out.println(cnt + ".\nName: " + first + " " + last + "\nDate: " + reservationDays[i] + "\nRoom: " + reservationRooms[i]);
                 cnt++;
             }
         }
@@ -518,7 +522,9 @@ public class Hotel {
                     createEmployee(firstName, lastName, number, password);
                     break;
                 case 2:
-                    
+                    System.out.println("Enter the employee you want to remove by number");
+                    number = getInt();
+                    deleteEmployee(number);
                     break;
                 case 3:
                     System.out.println("Enter a room number you want to create");
