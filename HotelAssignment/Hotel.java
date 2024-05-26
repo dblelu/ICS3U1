@@ -18,7 +18,7 @@ public class Hotel {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             int password = Integer.parseInt(br.readLine());
-            System.out.println("Enter your password");
+            System.out.println("Enter your password or 0 to go back");
             int input = getInt();
             int cnt = 0;
             while (password != input) {
@@ -44,25 +44,32 @@ public class Hotel {
     public static void employee(int number) {
         //Enter filler code that displays the name
         boolean goBack = false;
+        String first, last;
+        int day;
         while (!goBack) {
             System.out.println("Enter instructions:\n1. Make Reservations\n2. Cancel Reservations\n3. Change Reservations\n4. Change Pin\n5. List all rooms for date\n6. List all reservations for date\n7. Look up reservations for given name\n8. Log Out");
             int input = getInt();
             switch (input) {
                 case 1:
                     System.out.println("Enter the first name and last name");
-                    int first = sc.nextLine();
-                    int last = sc.nextLine();
+                    first = sc.nextLine();
+                    last = sc.nextLine();
                     System.out.println("Enter a date");
-                    int day = getInt();
-                    makeReservations(first, last, day, -1);
+                    day = getInt();
+                    makeReservations(first, last, day);
                     break;
                 case 2:
-                    cancelReservation();
+                    System.out.println("Enter the first name and last name");
+                    first = sc.nextLine();
+                    last = sc.nextLine();
+                    cancelReservation(first, last);
                     break;
                 case 3:
+                //impl
                     changeReservation();    
                     break;
-                case 4: 
+                case 4:
+                //impl 
                     changePin();
                     break;
                 case 5: 
@@ -71,7 +78,9 @@ public class Hotel {
                     listAvailableRooms(day);
                     break;
                 case 6:
-                    listReservationsDate();
+                    System.out.pritnln("Enter a date");
+                    day = getInt();
+                    listReservationsDate(date);
                     break;
                 case 7:
                     lookUpName();
@@ -82,7 +91,7 @@ public class Hotel {
             }
         }
     }
-    public static boolean makeReservations(int first, int last, int day, int sameRoom) {
+    public static boolean makeReservations(int first, int last, int day) {
         //Get reservation info
         int numberOfReservations, firstNames[], lastNames[], reservationDays[], reservationRooms[], employeeNumbers[];
         try {
@@ -101,7 +110,7 @@ public class Hotel {
         } catch (IOException e) {
             return false;
         }
-
+        //add the new info to the end of reservation list
         firstNames[numberOfReservations] = sc.nextLine();
         lastNames[numberOfReservations] = sc.nextLine();
         int[] rooms = getAvailableRooms(reservationDays, reservationRooms, day);
@@ -120,7 +129,11 @@ public class Hotel {
             System.out.println("Enter the room you want (int) ");
             room = getInt();
         }
-        if (!fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms)) return false;
+        reservationDays[numberOfReservations] = day;
+        reservationRooms[numberOfReservations] = room;
+        //fill the reservation list with the new info
+        if (!fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms, -1)) return false;
+        return true;
     }
     public static int[] getAvailableRooms(int[] reservationDays, int[] reservationRooms, int day) {
         try {
@@ -151,8 +164,8 @@ public class Hotel {
         try {
             BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
             numberOfReservations = Integer.parseInt(br.readLine());
-            reservationDays = new int[numberOfReservations+1];
-            reservationRooms = new int[numberOfReservations+1];
+            reservationDays = new int[numberOfReservations];
+            reservationRooms = new int[numberOfReservations];
             for (int i = 0; i < numberOfReservations; i++) {
                 firstNames[i] = br.readLine();
                 lastNames[i] = br.readLine();
@@ -192,22 +205,104 @@ public class Hotel {
         }
         return true;   
     }
-    public static boolean cancelReservations() {
-       
+    public static boolean cancelReservations(String first, String last) {
+        int numberOfReservations, firstNames[], lastNames[], reservationDays[], reservationRooms[], employeeNumbers[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
+            numberOfReservations = Integer.parseInt(br.readLine());
+            reservationDays = new int[numberOfReservations];
+            reservationRooms = new int[numberOfReservations];
+            for (int i = 0; i < numberOfReservations; i++) {
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                reservationDays[i] = Integer.parseInt(br.readLine());
+                reservationRooms[i] = Integer.parseInt(br.readLine());
+                employeeNumbers[i] = Integer.parseInt(br.readLine());
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        boolean[] valid = getReservationsByName(first, last);
+        int[] reserv = new int[valid.length + 1];
+        System.out.println("Here are your reservations: ");
+        for (int i = 0, cnt = 1; i < valid.length; i++) {
+            if (valid[i]) {
+                System.out.println("1. Date " + reservationDays[i] + "\nRoom" + reservationRooms[i]);
+                reserv[cnt++] = i;
+            }
+        }
+        System.out.println("Enter a reservation to cancel");
+        int cancel = getInt();
+        while (!valid[reserv[cancel]]) {
+            System.out.println("That reservation doesn't exist");
+            System.out.println("Enter a reservation to cancel");
+            cancel = getInt();
+        }
+        fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms, numberOfReservations, reserv[cancel]); 
+    } 
+    public static boolean[] getReservationsByName(String first, String last) {
+        String firstNames[], lastNames[]; 
+        int numberOfReservations, reservationDays[], reservationRooms[], employeeNumbers[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
+            numberOfReservations = Integer.parseInt(br.readLine());
+            reservationDays = new int[numberOfReservations];
+            reservationRooms = new int[numberOfReservations];
+            boolean[] ret = new boolean[numberOfReservations];
+            for (int i = 0; i < numberOfReservations; i++) {
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                reservationDays[i] = Integer.parseInt(br.readLine());
+                reservationRooms[i] = Integer.parseInt(br.readLine());
+                employeeNumbers[i] = Integer.parseInt(br.readLine());
+                ret[i] = (firstNames[i].equals(first) && lastNames[i].equals(last));
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println("ERROR!" + e);
+        }
+        return ret[i];
+    }
+    public static void listReservationsName() {
+        int numberOfReservations, firstNames[], lastNames[], reservationDays[], reservationRooms[], employeeNumbers[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("reservations.txt"));
+            numberOfReservations = Integer.parseInt(br.readLine());
+            reservationDays = new int[numberOfReservations];
+            reservationRooms = new int[numberOfReservations];
+            for (int i = 0; i < numberOfReservations; i++) {
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                reservationDays[i] = Integer.parseInt(br.readLine());
+                reservationRooms[i] = Integer.parseInt(br.readLine());
+                employeeNumbers[i] = Integer.parseInt(br.readLine());
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Error" + e);
+        }
+        System.out.println("Enter first name and last name");
+        String first = sc.nextLine();
+        String last = sc.nextLine();
+        boolean[] valid = getReservationsByName(first, last);
+        for (int i = 0; i < valid.length; i++) {
+            
+        }
     }
     public static boolean changeReservation() {
-        if (!cancelReservations()) return false;
-        if (!makeReservations()) return false;
-        return true;
+        
     }
     public static boolean changePin() {
 
     }
+    // Method to take in an int as input, not allowing the user to break the system with strings. 
     public static int getInt() {
         Scanner sc = new Scanner(System.in);
         String n = sc.nextLine();
         while (true) {
             try {
+                if (Interger.parseInt(n) < 0) throw NumberFormatException;
                 return Integer.parseInt(n);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. \nTry again: ");
