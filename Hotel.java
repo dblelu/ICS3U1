@@ -5,20 +5,31 @@ public class Hotel {
     public static void main(String[] args) {
         while (true) {
             System.out.println("Enter a employee number to log in: ");
-            
             int number = getInt();
             verify(number);
         }
     }
-    public static void verify(int number) {
-        if (number == 0) {
+    public static void verify(int num) {
+        if (num == 0) {
             admin();
             return;
         }
-        String file = number + ".txt";
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(file)));
-            int password = Integer.parseInt(br.readLine());
+            BufferedReader br = new BufferedReader(new FileReader("employee.txt"));
+            int numberOfEmployees = Integer.parseInt(br.readLine());
+            
+            boolean found = false;
+            int number = -1;
+            int password = -1;
+            String first = "";
+            String last = "";
+            for (int i = 0; i < numberOfEmployees && !found; i++) {
+                number = Integer.parseInt(br.readLine());
+                password = Integer.parseInt(br.readLine());
+                first = br.readLine();
+                last = br.readLine();
+                if (number == num) found = true;
+            }
             System.out.println("Enter your password for " + number + "or 0 to go back");
             int input = getInt();
             int cnt = 0;
@@ -32,12 +43,10 @@ public class Hotel {
                 System.out.println("Enter your password for " + number + "or 0 to go back");
                 input = getInt(); 
             }
-            String first = br.readLine();
-            String last = br.readLine();
             br.close();
             employee(number, first, last);
         } catch (IOException e) {
-            System.out.println("Employee number not valid");
+            System.out.println("Error" + e);
         }
     }
     public static void employee(int number, String empFirstName, String empLastName) {
