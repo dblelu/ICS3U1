@@ -503,7 +503,7 @@ public class Hotel {
     public static void admin() {
         Scanner sc = new Scanner(System.in);
         boolean logOut = false;
-        System.out.println("Welcome to the admin account");
+        System.out.println("\n\n\n\n\n\n\n\n\n\nWelcome to the admin account\n");
         
         String firstName, lastName;
         int number, password;
