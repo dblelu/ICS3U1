@@ -616,7 +616,7 @@ public class Hotel {
         int numberOfEmployees, nums[], pass[];
         String firstNames[], lastNames[];
         try {
-            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("employee.txt"));
             numberOfEmployees = Integer.parseInt(br.readLine());
             nums = new int[numberOfEmployees+1];
             pass = new int[numberOfEmployees+1];
@@ -647,7 +647,7 @@ public class Hotel {
         int numberOfEmployees, nums[], pass[], valid = -1;
         String firstNames[], lastNames[];
         try {
-            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("employee.txt"));
             numberOfEmployees = Integer.parseInt(br.readLine());
             nums = new int[numberOfEmployees+1];
             pass = new int[numberOfEmployees+1];
