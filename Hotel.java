@@ -501,7 +501,6 @@ public class Hotel {
         boolean logOut = false;
         System.out.println("Welcome to the admin account");
         
-
         String firstName, lastName;
         int number, password;
         while (!logOut) {
@@ -538,7 +537,28 @@ public class Hotel {
         }
     }
     public static boolean deleteRoom(int number) {
-        return false;
+        int numberOfRooms, rooms[];
+        int valid = -1;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            numberOfRooms = Integer.parseInt(br.readLine());
+            rooms = new int[numberOfRooms+1];
+            for (int i = 0; i < numberOfRooms; i++) {
+                rooms[i] = Integer.parseInt(br.readLine());
+                if (rooms[i] == number) {
+                    valid = i;
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        if (valid == -1) {
+            System.out.println("A room with that number does not exist");
+            return false;
+        }
+        if (!fillRoomFile(numberOfRooms, rooms, valid)) return false;
+        return true;
     }
     public static boolean createRoom(int number) {
         int numberOfRooms, rooms[];
@@ -558,15 +578,19 @@ public class Hotel {
             return false;
         }
         rooms[numberOfRooms] = number;
-        if (!fillRoomFile(numberOfRooms+1, rooms)) return false;
+        if (!fillRoomFile(numberOfRooms+1, rooms, -1)) return false;
         return true;
     }
-    public static boolean fillRoomFile(int numberOfRooms, int[] rooms) {
+    public static boolean fillRoomFile(int numberOfRooms, int[] rooms, int skip) {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("rooms.txt", false));
-            bw.write(numberOfRooms+""); bw.newLine();
+            if (skip == -1) bw.write(numberOfRooms+""); 
+            else bw.write(numberOfRooms-1+"");
+            bw.newLine();
             for (int i = 0; i < numberOfRooms; i++) {
-                bw.write(rooms[i] +""); bw.newLine();
+                if (skip != i) {
+                    bw.write(rooms[i] +""); bw.newLine();
+                }
             }
             bw.close();
         } catch (IOException e) {
@@ -575,19 +599,79 @@ public class Hotel {
         return true;
     }
     public static boolean createEmployee(String first, String last, int number, int password) {
-        return false;
-        //implement later
-        //remember to check if the employee with this number already exists
+        int numberOfEmployees, nums[], pass[];
+        String firstNames[], lastNames[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            numberOfEmployees = Integer.parseInt(br.readLine());
+            nums = new int[numberOfEmployees+1];
+            pass = new int[numberOfEmployees+1];
+            firstNames = new String[numberOfEmployees+1];
+            lastNames = new String[numberOfEmployees+1];
+            for (int i = 0; i < numberOfEmployees; i++) {
+                nums[i] = Integer.parseInt(br.readLine());
+                pass[i] = Integer.parseInt(br.readLine());
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                if (nums[i] == number) {
+                    System.out.println("A employee with that number already exists");
+                    return false;
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        nums[numberOfEmployees] = number;
+        pass[numberOfEmployees] = password;
+        firstNames[numberOfEmployees] = first;
+        lastNames[numberOfEmployees] = last;
+        if (!fillEmployeeFile(numberOfEmployees+1, nums, pass, firstNames, lastNames, -1)) return false;
+        return true;
     }
-    public static boolean fillEmployeeFile(int numberOfEmployees, int[] numbers, int[] passwords, String[] first, String[] last) {
+    public static boolean deleteEmployee(int number) {
+        int numberOfEmployees, nums[], pass[], valid = -1;
+        String firstNames[], lastNames[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            numberOfEmployees = Integer.parseInt(br.readLine());
+            nums = new int[numberOfEmployees+1];
+            pass = new int[numberOfEmployees+1];
+            firstNames = new String[numberOfEmployees+1];
+            lastNames = new String[numberOfEmployees+1];
+            for (int i = 0; i < numberOfEmployees; i++) {
+                nums[i] = Integer.parseInt(br.readLine());
+                pass[i] = Integer.parseInt(br.readLine());
+                firstNames[i] = br.readLine();
+                lastNames[i] = br.readLine();
+                if (nums[i] == number) {
+                    valid = i;
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        if (valid == -1) {
+            System.out.println("A employee with that number does not exist");
+            return false;
+        }
+        if (!fillEmployeeFile(numberOfEmployees, nums, pass, firstNames, lastNames, valid)) return false;
+        return true;
+    }
+    public static boolean fillEmployeeFile(int numberOfEmployees, int[] numbers, int[] passwords, String[] first, String[] last, int skip) {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("employee.txt", false));
-            bw.write(numberOfEmployees+""); bw.newLine();
+            if (skip == -1) bw.write(numberOfEmployees+"");
+            else bw.write(numberOfEmployees-1+""); 
+            bw.newLine();
             for (int i = 0; i < numberOfEmployees; i++) {
-                bw.write(numbers[i]+"");bw.newLine();
-                bw.write(passwords[i]+""); bw.newLine();
-                bw.write(first[i]); bw.newLine();
-                bw.write(last[i]); bw.newLine();
+                if (i != skip) {
+                    bw.write(numbers[i]+"");bw.newLine();
+                    bw.write(passwords[i]+""); bw.newLine();
+                    bw.write(first[i]); bw.newLine();
+                    bw.write(last[i]); bw.newLine();
+                }
             }
             bw.close();
         } catch (IOException e) {
