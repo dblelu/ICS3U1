@@ -132,9 +132,10 @@ public class Hotel {
             return false;
         }
         //add the new info to the end of reservation list
-        firstNames[numberOfReservations] = sc.nextLine();
-        lastNames[numberOfReservations] = sc.nextLine();
+        firstNames[numberOfReservations] = first;
+        lastNames[numberOfReservations] = last;
         int[] rooms = getAvailableRooms(reservationDays, reservationRooms, day);
+        System.out.println("Here is a list of available rooms");
         for (int i = 0; i < rooms.length; i++) {
             if (rooms[i] != -1) System.out.println("1. Room: " + rooms[i]);
         }
@@ -146,9 +147,9 @@ public class Hotel {
                 valid = true;
             } else {
                 System.out.println("That room is not available");
+                System.out.println("Enter the room you want (int) ");
+                room = getInt();
             }
-            System.out.println("Enter the room you want (int) ");
-            room = getInt();
         }
         reservationDays[numberOfReservations] = day;
         reservationRooms[numberOfReservations] = room;
@@ -382,6 +383,7 @@ public class Hotel {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. \nTry again: ");
             }
+            n = sc.nextLine();
         }
     }
 
