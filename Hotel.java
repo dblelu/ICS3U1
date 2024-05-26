@@ -384,20 +384,18 @@ public class Hotel {
             }
         }
         System.out.println("Enter a reservation to change or 0 to abort");
-        int idx = getInt()-1;
+        int idx = getInt();
         if (idx == 0) return false;
         while (!valid[reserv[idx]]) {
             System.out.println("That reservation doesn't exist");
             System.out.println("Enter a reservation to change or 0 to abort");
-            idx = getInt()-1;
+            idx = getInt();
         }
         
         System.out.println("What do you want to change: ");
         System.out.println("1. Name \n2. Date\n3. Room. \n4. Continue");
-        int op = -1;
+        int op = getInt();
         while (op != 4) {
-            System.out.println("What do you want to change: ");
-            System.out.println("1. Name \n2. Date\n3. Room\n4. Continue");
             switch (op) {
                 case 1:
                     System.out.println("Enter new first and last name");
@@ -407,13 +405,16 @@ public class Hotel {
                 case 2:
                     System.out.println("Enter a new day");
                     fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms, employeeNumbers, reserv[idx]);
-                    makeReservations(numberOfReservations, firstNames[reserv[idx]], lastNames[reserv[idx]], getInt());
+                    makeReservations(numberOfReservations, firstNames[reserv[idx]], lastNames[reserv[idx]], reservationDays[reserv[idx]] = getInt());
                     break;
                 case 3:
                     fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms, employeeNumbers, reserv[idx]);
                     makeReservations(numberOfReservations, firstNames[reserv[idx]], lastNames[reserv[idx]], reservationDays[reserv[idx]]);
                     break;
             }
+            System.out.println("What do you want to change: ");
+            System.out.println("1. Name \n2. Date\n3. Room\n4. Continue");
+            op = getInt();
         }
         fillReservationFile(numberOfReservations, firstNames, lastNames, reservationDays, reservationRooms, employeeNumbers, -1); 
         return true;
@@ -490,13 +491,109 @@ public class Hotel {
         }
         for (int i = 0; i < numberOfReservations; i++) {
             if (reservationDays[i] == day) {
-                System.out.println("Name " + firstNames[i] + " " + lastNames[i] + "\nDate: " + reservationDays[i] + "\nRoom " + reservationRooms + "\nEmployee " + employeeNumbers[i]);
+                System.out.println("Name " + firstNames[i] + " " + lastNames[i] + "\nDate: " + reservationDays[i] + "\nRoom " + reservationRooms[i] + "\nEmployee " + employeeNumbers[i]);
             }
         }
         return true;
     }
     public static void admin() {
-        //implement this later
+        Scanner sc = new Scanner(System.in);
+        boolean logOut = false;
+        System.out.println("Welcome to the admin account");
+        
+
+        String firstName, lastName;
+        int number, password;
+        while (!logOut) {
+            System.out.println("Enter an instruction: \n1. Create Employee \n2. Delete Employee \n3. Create Room \n4. Delete Room \n5. Log Out");
+            int op = getInt();
+            switch (op) {
+                case 1:
+                    System.out.println("Enter first and last name");
+                    firstName = sc.nextLine();
+                    lastName = sc.nextLine();
+                    System.out.println("Enter Employee Number");
+                    number = getInt();
+                    System.out.println("Enter password");
+                    password = getInt();
+                    createEmployee(firstName, lastName, number, password);
+                    break;
+                case 2:
+                    
+                    break;
+                case 3:
+                    System.out.println("Enter a room number you want to create");
+                    number = getInt();
+                    createRoom(number);
+                    break;
+                case 4:
+                    System.out.println("Enter a room you want to remove");
+                    number = getInt();
+                    deleteRoom(number);
+                    break;
+                case 5: 
+                    logOut = true;
+                    break;
+            }
+        }
+    }
+    public static boolean deleteRoom(int number) {
+        return false;
+    }
+    public static boolean createRoom(int number) {
+        int numberOfRooms, rooms[];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("rooms.txt"));
+            numberOfRooms = Integer.parseInt(br.readLine());
+            rooms = new int[numberOfRooms+1];
+            for (int i = 0; i < numberOfRooms; i++) {
+                rooms[i] = Integer.parseInt(br.readLine());
+                if (rooms[i] == number) {
+                    System.out.println("A room with that number already exists");
+                    return false;
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            return false;
+        }
+        rooms[numberOfRooms] = number;
+        if (!fillRoomFile(numberOfRooms+1, rooms)) return false;
+        return true;
+    }
+    public static boolean fillRoomFile(int numberOfRooms, int[] rooms) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("rooms.txt", false));
+            bw.write(numberOfRooms+""); bw.newLine();
+            for (int i = 0; i < numberOfRooms; i++) {
+                bw.write(rooms[i] +""); bw.newLine();
+            }
+            bw.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+    public static boolean createEmployee(String first, String last, int number, int password) {
+        return false;
+        //implement later
+        //remember to check if the employee with this number already exists
+    }
+    public static boolean fillEmployeeFile(int numberOfEmployees, int[] numbers, int[] passwords, String[] first, String[] last) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("employee.txt", false));
+            bw.write(numberOfEmployees+""); bw.newLine();
+            for (int i = 0; i < numberOfEmployees; i++) {
+                bw.write(numbers[i]+"");bw.newLine();
+                bw.write(passwords[i]+""); bw.newLine();
+                bw.write(first[i]); bw.newLine();
+                bw.write(last[i]); bw.newLine();
+            }
+            bw.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
     // Method to take in an int as input, not allowing the user to break the system with strings. 
     public static int getInt() {
