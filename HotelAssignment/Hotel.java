@@ -15,10 +15,9 @@ public class Hotel {
             admin();
             return;
         }
-
-        File file = new File(number + ".txt");
+        String file = number + ".txt";
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new FileReader(new File(file)));
             int password = Integer.parseInt(br.readLine());
             System.out.println("Enter your password for " + number + "or 0 to go back");
             int input = getInt();
@@ -33,13 +32,15 @@ public class Hotel {
                 System.out.println("Enter your password for " + number + "or 0 to go back");
                 input = getInt(); 
             }
+            String first = br.readLine();
+            String last = br.readLine();
             br.close();
-            employee(number);
+            employee(number, first, last);
         } catch (IOException e) {
             System.out.println("Employee number not valid");
         }
     }
-    public static void employee(int number) {
+    public static void employee(int number, String empFirstName, String empLastName) {
         Scanner sc = new Scanner(System.in);
         //Enter filler code that displays the name
         boolean goBack = false;
