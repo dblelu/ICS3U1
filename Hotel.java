@@ -143,7 +143,6 @@ public class Hotel {
         return true;   
     }
     public static boolean makeReservations(int number, String first, String last, int day) {
-        Scanner sc = new Scanner(System.in);
         //Get reservation info
         String firstNames[], lastNames[];
         int numberOfReservations,  reservationDays[], reservationRooms[], employeeNumbers[];
@@ -505,6 +504,9 @@ public class Hotel {
     }
     public static void admin() {
         Scanner sc = new Scanner(System.in);
+
+        //verify password for admin
+
         boolean logOut = false;
         System.out.println("\n\n\n\n\n\n\n\n\n\nWelcome to the admin account\n\n");
         
@@ -584,6 +586,7 @@ public class Hotel {
                 rooms[i] = Integer.parseInt(br.readLine());
                 if (rooms[i] == number) {
                     System.out.println("A room with that number already exists");
+                    br.close();
                     return false;
                 }
             }
@@ -629,6 +632,7 @@ public class Hotel {
                 lastNames[i] = br.readLine();
                 if (nums[i] == number) {
                     System.out.println("A employee with that number already exists");
+                    br.close();
                     return false;
                 }
             }
