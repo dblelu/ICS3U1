@@ -1203,5 +1203,5 @@ public class Hotel
             n = sc.nextLine();
         }
     }
-
+    
 }
