@@ -4,7 +4,7 @@ import java.util.Scanner;
 /*==========================================================
 | Hotel.java                                               |
 |----------------------------------------------------------|
-| Programmers:  Mohan Chen & Yanning Wang                  |
+| Programmers:  Mohan Chen.                                |
 | Last modified:  May 26th, 2024                           |
 |----------------------------------------------------------|
 | The program is a hotel reservation booking system.       | 
@@ -31,13 +31,18 @@ public class Hotel
    ====================================================================*/
     public static void verify(int num) 
     {
-        System.out.println("Please Enter the password");
-        int pw = getInt();
-        if (num == 0 && pw == 1234) 
+        
+        if (num == 0) 
         {
-
+            System.out.println("Enter the password or 0 to go back");
+            int pw = getInt();
+            while (pw != 1234);
+            {
+                if (pw == 0) return;
+                System.out.println("Enter the password or 0 to go back");
+                pw = getInt();
+            }
             admin();
-            return;
         }
         try 
         {
@@ -78,7 +83,7 @@ public class Hotel
                 }
                 if (input == 0) return;
                 cnt++; 
-                System.out.println("Enter your password for " + number + "or 0 to go back");
+                System.out.println("Enter your password for " + number + " or 0 to go back");
                 input = getInt(); 
             }
             
@@ -1203,5 +1208,5 @@ public class Hotel
             n = sc.nextLine();
         }
     }
-    
+
 }
