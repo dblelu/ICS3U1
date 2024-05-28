@@ -13,6 +13,7 @@ public class Hotel
 {
     public static void main(String[] args) 
     {
+        
         while (true) 
         {
             System.out.println("Enter a employee number to log in: ");
@@ -31,10 +32,12 @@ public class Hotel
    ====================================================================*/
     public static void verify(int num) 
     {
-        if (num == 0) {
+        if (num == 0) 
+        {
             System.out.println("Enter password");
             int pass = getInt();
-            while (pass != 1234) {
+            while (pass != 1234) 
+            {
                 System.out.println("Eneter password or 0 to return");
                 pass = getInt();
                 if (pass == 0) return;
