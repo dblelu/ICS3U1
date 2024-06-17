@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Battleship",
+            "request": "launch",
+            "mainClass": "Battleship",
+            "projectName": "ICS3U1_94dd8538"
+        },
+        {
+            "type": "java",
             "name": "Hotel",
             "request": "launch",
             "mainClass": "Hotel",
