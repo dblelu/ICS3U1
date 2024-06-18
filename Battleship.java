@@ -13,7 +13,7 @@ public class Battleship {
         boolean quit = false;
         while (!quit) {
             System.out.println("Enter an instruction: ");
-            System.out.println("1. Start new game \n2. Load Game \n3. Display instructions \n4. quit");
+            System.out.println("1. Start new game \n2. Load Game \n3. Display instructions \n4. Quit");
             int c = getInt();
             switch (c) {
                 case 1:
@@ -32,9 +32,9 @@ public class Battleship {
             }
         }
     }
-    public static void saveGame(String file, char[][] pShips, char[][] cShips, char[][] pShots, char[][] cShots, int difficulty) {
+    public static void saveGame(String file, char[][] pShips, char[][] cShips, char[][] pShots, char[][] cShots, int difficulty, int[] prev) {
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file + ".txt", true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file + ".txt", false));
             bw.write(difficulty +""); bw.newLine();
             for (int i = 0; i < SIZE; i++) {
                 for (int j = 0; j < SIZE; j++) {
@@ -60,7 +60,11 @@ public class Battleship {
                 }
                 bw.newLine();
             }
+            bw.write(prev[0] + ""); bw.newLine();
+            bw.write(prev[1] + ""); bw.newLine();
+            bw.write(prev[2] + ""); bw.newLine();
             bw.close();
+            System.out.println("Game saved succesfully");
         } catch (IOException e) {
             System.out.println("ERORR" + e);
         }
@@ -98,8 +102,12 @@ public class Battleship {
                     cShots[i][j] = s.charAt(j);
                 }
             }
+            int[] prev = new int[3];
+            prev[0] = Integer.parseInt(br.readLine());
+            prev[1] = Integer.parseInt(br.readLine());
+            prev[2] = Integer.parseInt(br.readLine());
             br.close();
-            playGame(pShips, pShots, cShips, cShots, difficulty);
+            playGame(pShips, pShots, cShips, cShots, difficulty, prev);
         } catch (IOException e) {
             System.out.println("Error" + e);
         }
@@ -124,13 +132,14 @@ public class Battleship {
             System.out.println("Current Board");
             displayBoard(pShips, pShots);
 
-            System.out.println("Enter the top left x coordinate for piece " + NAMES[i] + " of length " + NAMES[i]);
+            System.out.println("Enter the top left x coordinate for piece " + NAMES[i] + " of length " + LENGTHS[i]);
             int x = getInt() - 1;
-            System.out.println("Enter the top left y coordinate for piece " + NAMES[i] + " of length " + NAMES[i]);
+            System.out.println("Enter the top left y coordinate for piece " + NAMES[i] + " of length " + LENGTHS[i]);
             int y = getInt() - 1;
             System.out.println("Enter an orientation for the piece (0 horiantal) (1 vertical)");
             int o = getInt();
             if (checkOverlap(x, y, o, LENGTHS[i], pShips)) {
+                System.out.println("Your ships overlap \nTry Again\n\n");
                 i--;
             } else {
                 place(x, y, o, LENGTHS[i], pShips, CHARS[i]);
@@ -144,13 +153,12 @@ public class Battleship {
             int y = (int) (Math.random() * SIZE);
             int o = (int) (Math.random() * 2);
             if (checkOverlap(x, y, o, LENGTHS[i], cShips)) {
-                System.out.println("Your ships overlap \n Try Again");
                 i--;
             } else {
                 place(x, y, o, LENGTHS[i], cShips, CHARS[i]);
             } 
         }
-        playGame(pShips, pShots, cShips, cShots, diff);
+        playGame(pShips, pShots, cShips, cShots, diff, new int[]{0, 0, 0});
     }
     public static boolean checkOverlap(int r, int c, int o, int l, char[][] board) {
         if (o == 1) {
@@ -175,23 +183,22 @@ public class Battleship {
             }
         }
     }
-    public static void playGame(char[][] pShips, char[][] pShots, char[][] cShips, char[][] cShots, int difficulty) {
+    public static void playGame(char[][] pShips, char[][] pShots, char[][] cShips, char[][] cShots, int difficulty, int[] prev) {
         boolean quit = false;
 
         while (!quit) {
-            System.out.println("Current board");
+            System.out.println("\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\nCurrent board");
             displayBoard(pShips, pShots);
             System.out.println("Enter an instruction");
             System.out.println("1. Place a shot \n2. Save the game \n3. Surrender");
             int op = getInt();
-            int[] prev = {0, 0, 0};
             switch (op) {
                 case 1:
                     System.out.println("Enter a shot x and y coordinate between 1 and 10"); 
                     int x = getInt() - 1;
                     int y = getInt() - 1;
                     if (onBoard(x, y)) {
-                        System.out.println("Player move: ");
+                        System.out.println("\n\n\nPlayer move: ");
                         makeMove(x, y, cShips, pShots);
                         System.out.println("Computer move: ");
                         prev = moveComp(pShips, cShots, difficulty, prev);
@@ -199,7 +206,7 @@ public class Battleship {
                     break;
                 case 2:
                     System.out.println("Enter a filename to save to");
-                    saveGame(getLine(), pShips, cShips, pShots, cShots, difficulty);
+                    saveGame(getLine(), pShips, cShips, pShots, cShots, difficulty, prev);
                     break;
                 case 3:
                     quit = true;
@@ -208,36 +215,38 @@ public class Battleship {
         }
     }
     public static int[] moveComp(char[][] pShips, char[][] cShots, int difficulty, int[] prevShot) {
-        int hit = 0;
-        int x = 0, y = 0;
-        int[][] moves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-        if (difficulty == 0 || prevShot[0] == 0) {
-            x = (int) (Math.random() * SIZE);
-            y = (int) (Math.random() * SIZE);
-            makeMove(x, y, pShips, cShots);
-            if (pShips[x][y] == HIT) hit = 1;
-            
-        } else {
+        //System.out.println("TESTING CODE"); //debbuging code
+        //displayBoard(pShips, cShots);
+        //System.out.println("prev" + prevShot[0] + " " + prevShot[1] + " " +prevShot[2]);
+        int x = prevShot[0], y = prevShot[1];
+        if (difficulty == 1 && prevShot[2] == 1) {
+            //System.out.println("HARD");
+            int[][] moves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
             for (int[] m: moves) {
-                int r = prevShot[1] + m[0], c = prevShot[2] + m[1];
-                if (onBoard(r, c)) {
-                    x = r; y = c;
-                    if (makeMove(r, c, pShips, cShots)) {
-                        hit = 0;
-                    } else if (cShots[r][c] == HIT) {
-                        hit = 1;
-                    } else {
-                        hit = 0;
+                int newx = x + m[0], newy = y + m[1];
+                if (onBoard(newx, newy) && cShots[newx][newy] == EMP) {
+                    if (makeMove(newx, newy, pShips, cShots)) prevShot[2] = 0;
+                    else if (cShots[newx][newy] == HIT) {
+                        prevShot[0] = newx;
+                        prevShot[1] = newy;
                     }
+                    return prevShot;
                 }
             }
+            //System.out.println("fail");
+        } 
+        while (!(onBoard(prevShot[0], prevShot[1]) && cShots[prevShot[0]][prevShot[1]] == EMP)) {
+            prevShot[0] = (int) (Math.random() * SIZE);
+            prevShot[1] = (int) (Math.random() * SIZE);
         }
-        return new int[]{hit, x, y};
+        if (makeMove(prevShot[0], prevShot[1], pShips, cShots)) prevShot[2] = 0;
+        else if (cShots[prevShot[0]][prevShot[1]] == HIT) prevShot[2] = 1; 
+        return prevShot;
     }
     public static boolean makeMove(int x, int y, char[][] ships, char[][] shots) {
         char c = ships[x][y];
         if (c != EMP) {
-            System.out.println("HIT ON SQUARE (" + x + "," + y + ")");
+            System.out.println("HIT ON SQUARE (" + (x+1) + "," + (y+1) + ")");
             place(x, y, 0, 1, shots, HIT);
             place(x, y, 0, 1, ships, HIT);
             if (checkSink(ships, c)) {
@@ -245,7 +254,7 @@ public class Battleship {
                 return true;
             }
         } else {
-            System.out.println("MISS ON SQUARE (" + x + "," + y + ")");
+            System.out.println("MISS ON SQUARE (" + (x+1) + "," + (y+1) + ")");
             place(x, y, 0, 1, shots, MISS);
             place(x, y, 0, 1, ships, MISS);
         }
@@ -259,10 +268,10 @@ public class Battleship {
     public static boolean checkSink(char[][] ships, char c) {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (ships[i][j] == c) return true;
+                if (ships[i][j] == c) return false;
             }
         }
-        return false;
+        return true;
     }
     public static String getShip(char c) {
         for (int i = 0; i < NAMES.length; i++) {
@@ -274,7 +283,7 @@ public class Battleship {
         System.out.printf("%-20s%s%n", "Ships:", "Shots:");
         for (int i = 0; i < SIZE + 1; i++) {
             if (i == 0) {
-                System.out.print(" ");
+                System.out.print("  ");
                 for (int j = 1; j <= SIZE; j++) {
                     System.out.print(" " + j);
                 }
@@ -283,11 +292,11 @@ public class Battleship {
                     System.out.print(" " + j);
                 }
             } else {
-                System.out.print(i + " ");
+                System.out.printf("%2d", i);
                 for (int j = 0; j < SIZE; j++) {
                     System.out.print(" " + pb[i-1][j]);
                 }
-                System.out.print("    " + i + " ");
+                System.out.printf("   %2d", i);
                 for (int j = 0; j < SIZE; j++) {
                     System.out.print(" " + cb[i-1][j]);
                 }  
